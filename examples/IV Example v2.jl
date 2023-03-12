@@ -13,6 +13,8 @@ using StatsModels
 
 θ_0 = fill(1.0, 3)
 
+## can't use macro inside of the package so need to using StatsModel outside
+## then we need to add that macro somehow to package or create macro for GMMLinearModel...
 linear_model_ols = GMMLinearModel(@formula(rent ~ 1 + hsngval + pcturban), @formula(0 ~ 1 + pcturban + faminc + region), θ_0, df)
 
 result_one_step = fit(linear_model_ols, OneStep(linear_model_ols))
