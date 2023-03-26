@@ -5,7 +5,7 @@ struct OneStep <: GMMMethods
 end
 
 function OneStep(model::GMMLinearModel)
-    return OneStep(WeightMatrixUnadj(model))
+    return OneStep(WeightMatrixUnadj(model).W)
 end
 export OneStep
 
@@ -15,7 +15,7 @@ struct TwoStep <: GMMMethods
 end
 
 function TwoStep(model::GMMLinearModel, wmat_fun)
-    return TwoStep(WeightMatrixUnadj(model), wmat_fun)
+    return TwoStep(WeightMatrixUnadj(model).W, wmat_fun)
 end
 export TwoStep
 
@@ -26,7 +26,7 @@ struct Iterated <: GMMMethods
 end
 
 function Iterated(model::GMMLinearModel, wmat_fun, iterations)
-    return Iterated(WeightMatrixUnadj(model), wmat_fun, iterations)
+    return Iterated(WeightMatrixUnadj(model).W, wmat_fun, iterations)
 end
 export Iterated
 

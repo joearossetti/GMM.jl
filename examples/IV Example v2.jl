@@ -22,8 +22,8 @@ se(result_one_step, CovUnadj)
 
 result_two_step = fit(linear_model_ols, TwoStep(linear_model_ols, WeightMatrixRobust))
 se(result_two_step, CovRobust)
-## does not quite match Stata, it may be the finite sample size adjustment although docs do not show one
 
 result_2_step = fit(linear_model_ols, Iterated(linear_model_ols, WeightMatrixRobust, 2))
 
 result_4_step = fit(linear_model_ols, Iterated(linear_model_ols, WeightMatrixRobust, 10))
+se(result_4_step, CovRobust)

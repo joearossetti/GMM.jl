@@ -3,3 +3,5 @@
 *.jl.mem
 /Manifest.toml
 /examples/Example Data Sets/
+/examples/Manifest.toml
+/examples/Project.toml

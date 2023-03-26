@@ -11,7 +11,7 @@ function CovUnadj(model::GMMLinearModel)
     s2 = u' * u / n 
     S = (1/n) * model.Z' * model.Z * s2
     
-    W = WeightMatrixUnadj(model)
+    W = model.W
     G = (1/n) * model.Z' * model.X
     M = G' * W * S * W * G
     B = inv(G' * W * G)
@@ -32,7 +32,7 @@ function CovRobust(model::GMMLinearModel)
     S = (1/n) * model.Z' * u_mat * model.Z
     
     G = (1/n) * model.Z' * model.X
-    W = WeightMatrixRobust(model)
+    W = model.W
 
     M = G' * W * S * W * G
     B = inv(G' * W * G)

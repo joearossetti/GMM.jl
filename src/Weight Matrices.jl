@@ -15,9 +15,12 @@ struct WeightMatrixUnadj <: WeightMatrix
     W
 end
 
+function WeightMatrixUnadj(n, Z)
+    return WeightMatrixUnadj(inv((1/n) * Z' * Z))
+end
+
 function WeightMatrixUnadj(model::GMMLinearModel)
-    n = length(model.y)
-    return inv((1/n) * model.Z' * model.Z)
+    return WeightMatrixUnadj(model.n, model.Z)
 end
 export WeightMatrixUnadj
 
@@ -25,10 +28,12 @@ struct WeightMatrixRobust <: WeightMatrix
     W
 end
 
-function WeightMatrixRobust(model::GMMLinearModel)
-    n = length(model.y)
-    u = model.y - model.X * model.estimates
+function WeightMatrixRobust(n, u, Z)
     u_mat = Diagonal(u .^ 2)
-    return inv((1/n) * model.Z' * u_mat * model.Z)
+    return WeightMatrixRobust(inv((1/n) * Z' * u_mat * Z))
+end
+
+function WeightMatrixRobust(model::GMMLinearModel)
+    return WeightMatrixRobust(model.n, model.y - model.X * model.estimates, model.Z)
 end
 export WeightMatrixRobust
