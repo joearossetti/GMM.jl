@@ -13,5 +13,6 @@ include("Linear Models.jl")
 include("Weight Matrices.jl")
 include("GMM Methods.jl")
 include("Linear Fitting.jl")
+include("CovMats.jl")
 
 end
