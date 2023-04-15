@@ -17,13 +17,16 @@ using StatsModels
 ## then we need to add that macro somehow to package or create macro for GMMLinearModel...
 linear_model_ols = GMMLinearModel(@formula(rent ~ 1 + hsngval + pcturban), @formula(0 ~ 1 + pcturban + faminc + region), θ_0, df)
 
-result_one_step = fit(linear_model_ols, OneStep(linear_model_ols))
+result_one_step = fit(linear_model_ols, OneStep)
+
+@show result_one_step.estimates
 se(result_one_step, CovUnadj)
 
-result_two_step = fit(linear_model_ols, TwoStep(linear_model_ols, WeightMatrixRobust))
+result_two_step = fit(linear_model_ols, TwoStep(WeightMatrixRobust))
 se(result_two_step, CovRobust)
 
-result_2_step = fit(linear_model_ols, Iterated(linear_model_ols, WeightMatrixRobust, 2))
 
-result_4_step = fit(linear_model_ols, Iterated(linear_model_ols, WeightMatrixRobust, 10))
+result_2_step = fit(linear_model_ols, Iterated(WeightMatrixRobust, 2))
+
+result_4_step = fit(linear_model_ols, Iterated(WeightMatrixRobust, 10))
 se(result_4_step, CovRobust)

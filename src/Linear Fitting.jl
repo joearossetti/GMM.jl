@@ -1,34 +1,52 @@
-function fit(model::GMMLinearModel, method::OneStep)
-    Q = gmm_obj(moment_fun(model), method.wmat_init)
 
-    results = optimize(Q, model.estimates)
-    
+function solve_normal_eqn(X, Z, y, W)
+    A = X' * Z * W * Z' * X
+    b = X' * Z * W * Z' * y
+
+    return A \ b
+end
+
+function fit(model::GMMLinearModel, ::Type{OneStep})
+    W_init = model.W.W
+
+    results = solve_normal_eqn(model.X, model.Z, model.y, W_init)
+
     model_fitted = GMMLinearModel(model.model_formula,
     model.model_formula_iv, model.n, model.y,
-    model.X, model.Z, method.wmat_init, results.minimizer)
+    model.X, model.Z, W_init,  results)
 
     return model_fitted
 end
 
 function fit(model::GMMLinearModel, method::TwoStep)
-    model_1 = fit(model, OneStep(method.wmat_init))
+    W_init = model.W.W
     
-    W = method.wmat_fun(model_1).W
+    results_1 = solve_normal_eqn(model.X, model.Z, model.y, W_init)
 
-    model_2 = fit(model_1, OneStep(W))
-    
-    return model_2
+    W_hat = method.wmat_fun(model.n, model.y - model.X * results_1, model.Z).W
+
+    results_2 = solve_normal_eqn(model.X, model.Z, model.y, W_hat)
+
+    model_fitted = GMMLinearModel(model.model_formula,
+    model.model_formula_iv, model.n, model.y,
+    model.X, model.Z, W_hat, results_2)
+
+    return model_fitted
 end
 
 function fit(model::GMMLinearModel, method::Iterated)
-    model_i = fit(model, OneStep(method.wmat_init))
-    
-    for i in 1:(method.iterations - 1)
-        W = method.wmat_fun(model_i).W
-        model_i = fit(model_i, OneStep(W))
-    end
-    
-    return model_i
-end 
+    W_hat = model.W.W
+    results_i = similar(model.estimates)
+    for i in 1:method.iterations
+        results_i = solve_normal_eqn(model.X, model.Z, model.y, W_hat)
 
+        if i<method.iterations
+            W_hat = method.wmat_fun(model.n, model.y - model.X * results_i, model.Z).W
+        end
+    end
+
+    model_fitted = GMMLinearModel(model, results_i, W_hat)
+
+    return model_fitted
+end
 export fit
